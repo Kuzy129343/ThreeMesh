@@ -8,12 +8,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import config from './config.json';
 
+import GridGroup from './GridGroup.js';
+
 export default {
   name: 'Cube',
   mounted() {
     const scene = new THREE.Scene();
     const aspect = window.innerWidth / window.innerHeight;
-    const frustumSize = 10;
+    const frustumSize = 20;
     const camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 1000);
 
     const renderer = new THREE.WebGLRenderer();
@@ -23,48 +25,19 @@ export default {
 
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0xf056b1, transparent: true, opacity: 0.5 });
+
     const cube = new THREE.Mesh(geometry, material);
 
-    const cubeGroup = new THREE.Group();
-    cubeGroup.add(cube);
-    scene.add(cubeGroup);
+    scene.add(cube);
 
     camera.position.z = 7;
 
-    const gridGroup = new THREE.Group();
+    config.frustumSize = frustumSize
+    config.aspect = 1
+
+
+    const gridGroup = new GridGroup(config);
     scene.add(gridGroup);
-
-for (const size of config.grid.lineSizes) {
-  const divisionValue = config.grid.divisionValues[size];
-  const lineMaterial = new THREE.LineBasicMaterial({ color: parseInt(config.grid.lineColors[size]), linewidth: size });
-  if (divisionValue === 0) {
-    const verticalLinePoints = [new THREE.Vector3(0, -frustumSize / 2, -1), new THREE.Vector3(0, frustumSize / 2, -1)];
-    const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
-    const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
-    gridGroup.add(verticalLine);
-
-    const horizontalLinePoints = [new THREE.Vector3(-frustumSize * aspect / 2, 0, -1), new THREE.Vector3(frustumSize * aspect / 2, 0, -1)];
-    const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
-    const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
-    gridGroup.add(horizontalLine);
-  } else {
-    for (let position = -frustumSize *2 / 2; position <= frustumSize*2  / 2; position += divisionValue) {
-      const verticalLinePoints = [new THREE.Vector3(position, -frustumSize / 2, -1), new THREE.Vector3(position, frustumSize / 2, -1)];
-      const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
-      const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
-      gridGroup.add(verticalLine);
-
-      if (position >= -frustumSize / 2 && position <= frustumSize / 2) {
-        const horizontalLinePoints = [new THREE.Vector3(-frustumSize * aspect / 2, position, -1), new THREE.Vector3(frustumSize * aspect / 2, position, -1)];
-        const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
-        const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
-        gridGroup.add(horizontalLine);
-      }
-    }
-  }
-}
-
-
 
     const controls = new OrbitControls(camera, renderer.domElement);
 

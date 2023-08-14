@@ -1,18 +1,25 @@
 {
     "grid": {
-      "lineSizes": [1, 2, 3, 4],
-      "lineColors": {
-        "1": "0xFFFFFF",
-        "2": "0xFF0000",
-        "3": "0xFFFF00",
-        "4": "0x00FF00"
-      },
-      "divisionValues": {
-        "4": 0,
-        "3": 1,
-        "2": 0.5,
-        "1": 0.1
-      }
+        "1":{
+            "size":1,
+            "color": "0xFFFFFF",
+            "divisionValue": 0.1         
+        },
+        "2":{
+            "size":2,
+            "color": "0xFF0000",
+            "divisionValue": 0.5         
+        },
+        "3":{
+            "size":3,
+            "color": "0xFFFF00",
+            "divisionValue": 1         
+        },
+        "4":{
+            "size":4,
+            "color": "0x00FF00",
+            "divisionValue": 0         
+        }
+
     }
-  }
-  
+}
