@@ -18,7 +18,7 @@
         "4":{
             "size":4,
             "color": "0x00FF00",
-            "divisionValue": 0         
+            "divisionValue": 100    
         }
 
     }
