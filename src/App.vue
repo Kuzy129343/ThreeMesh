@@ -6,10 +6,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import config from './config.json';
+
 export default {
   name: 'Cube',
   mounted() {
-
     const scene = new THREE.Scene();
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 10;
@@ -20,114 +21,60 @@ export default {
     renderer.setClearColor(0x000000);
     document.getElementById('cubeContainer').appendChild(renderer.domElement);
 
-
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0xf056b1, transparent: true, opacity: 0.5 });
     const cube = new THREE.Mesh(geometry, material);
 
-    const edges = new THREE.EdgesGeometry(geometry);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 3 });
-    const lines = new THREE.LineSegments(edges, lineMaterial);
-
-    
-cube.add(lines);
-
-const cubeGroup = new THREE.Group();
-cubeGroup.add(cube);
-scene.add(cubeGroup);
+    const cubeGroup = new THREE.Group();
+    cubeGroup.add(cube);
+    scene.add(cubeGroup);
 
     camera.position.z = 7;
 
     const gridGroup = new THREE.Group();
     scene.add(gridGroup);
 
-const MAX_X = 30;
-const MAX_Y = 30;
+for (const size of config.grid.lineSizes) {
+  const divisionValue = config.grid.divisionValues[size];
+  const lineMaterial = new THREE.LineBasicMaterial({ color: parseInt(config.grid.lineColors[size]), linewidth: size });
+  if (divisionValue === 0) {
+    const verticalLinePoints = [new THREE.Vector3(0, -frustumSize / 2, -1), new THREE.Vector3(0, frustumSize / 2, -1)];
+    const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
+    const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
+    gridGroup.add(verticalLine);
 
-const addLine = (x1, y1, x2, y2, color, group) => {
-    const points = [new THREE.Vector3(x1, y1, -1), new THREE.Vector3(x2, y2, -1)];
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const clippingPlanes = [
-        new THREE.Plane(new THREE.Vector3(-1, 0, 0), MAX_X),
-        new THREE.Plane(new THREE.Vector3(1, 0, 0), MAX_X),
-        new THREE.Plane(new THREE.Vector3(0, -1, 0), MAX_Y),
-        new THREE.Plane(new THREE.Vector3(0, 1, 0), MAX_Y)
-    ];
-    const lineMaterial = new THREE.LineBasicMaterial({ color: color, clippingPlanes: clippingPlanes });
-    const line = new THREE.Line(geometry, lineMaterial);
-    group.add(line);
-};
+    const horizontalLinePoints = [new THREE.Vector3(-frustumSize * aspect / 2, 0, -1), new THREE.Vector3(frustumSize * aspect / 2, 0, -1)];
+    const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
+    const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
+    gridGroup.add(horizontalLine);
+  } else {
+    for (let position = -frustumSize *2 / 2; position <= frustumSize*2  / 2; position += divisionValue) {
+      const verticalLinePoints = [new THREE.Vector3(position, -frustumSize / 2, -1), new THREE.Vector3(position, frustumSize / 2, -1)];
+      const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
+      const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
+      gridGroup.add(verticalLine);
 
-const addLines = (step, color) => {
-    for (let i = -MAX_Y; i <= MAX_Y; i += step) {
-        addLine(-MAX_X , i + step /2 , MAX_X , i + step /2 , color , gridGroup ,0.5);
+      if (position >= -frustumSize / 2 && position <= frustumSize / 2) {
+        const horizontalLinePoints = [new THREE.Vector3(-frustumSize * aspect / 2, position, -1), new THREE.Vector3(frustumSize * aspect / 2, position, -1)];
+        const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
+        const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
+        gridGroup.add(horizontalLine);
+      }
     }
-
-    for (let i = -MAX_X; i <= MAX_X; i += step) {
-        addLine(i + step /2 , -MAX_Y , i + step /2 , MAX_Y , color , gridGroup ,0.5);
-    }
+  }
 }
 
-const createGrid = (size, divisions) => {
-    while (gridGroup.children.length > 0) {
-        gridGroup.remove(gridGroup.children[0]);
-    }
 
-    const zoom = camera.zoom;
-
-    let step = size / divisions;
-    let color = 0x00FF00;
-
-    let halfColor = color;
-
-    let zoomLevel = zoom >=1.5 ?1.5:1;
-
-    while(zoom >= zoomLevel){
-        addLines(step, halfColor);
-
-        if(zoom >= zoomLevel *2){
-            gridGroup.children.forEach((child) => {
-                if(child.material.color.getHex() === halfColor){
-                    child.material.color.setHex(color);
-                }
-            });
-
-            step /=2;
-
-            halfColor =0xFF0000;
-            zoomLevel *=2;
-        } else {
-            break;
-        }
-
-}
-
-for (let i = -MAX_Y; i <= MAX_Y; i += size / divisions) {
-        addLine(-MAX_X,i,MAX_X,i,color,gridGroup);
-}
-
-for (let i = -MAX_X; i <= MAX_X; i += size / divisions) {
-        addLine(i,-MAX_Y,i,MAX_Y,color,gridGroup);
-}
-};
-
-    createGrid(30, 30);
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    controls.addEventListener('change', function () {
-  createGrid(30, 30);
-});
-
-controls.addEventListener('zoom', function () {
-  createGrid(30, 30);
-});
-
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
+    
     document.addEventListener('mousedown', function (e) {
       isDragging = true;
     });
+    
     document.addEventListener('mousemove', function (e) {
       const deltaMove = {
         x: e.offsetX - previousMousePosition.x,
@@ -147,6 +94,7 @@ controls.addEventListener('zoom', function () {
 
       previousMousePosition = { x: e.offsetX, y: e.offsetY };
     });
+    
     document.addEventListener('mouseup', function (e) {
       isDragging = false;
     });
@@ -164,19 +112,6 @@ controls.addEventListener('zoom', function () {
     };
 
     animate();
-
-    window.addEventListener('resize', function () {
-      camera.left   = -frustumSize * aspect / 2;
-      camera.right  = frustumSize * aspect / 2;
-      camera.top    = frustumSize / 2;
-      camera.bottom = -frustumSize / 2;
-      
-      camera.updateProjectionMatrix();
-      
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      
-      createGrid(30, 30);
-    });
 
 }, }; </script>
 
