@@ -7,11 +7,7 @@ export default class GridGroup extends Group {
         /** Инициализация */
         super();
 
-        let frustumSize = config.frustumSize
-
         this.config = config
-
-        this.scale(frustumSize)
 
     }
 

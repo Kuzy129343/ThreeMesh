@@ -32,12 +32,10 @@ export default {
 
     camera.position.z = 7;
 
-    config.frustumSize = frustumSize
-    config.aspect = 1
-
-
     const gridGroup = new GridGroup(config);
     scene.add(gridGroup);
+
+    gridGroup.scale(frustumSize)
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
