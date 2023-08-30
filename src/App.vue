@@ -15,7 +15,7 @@ export default {
   mounted() {
     const scene = new THREE.Scene();
     const aspect = window.innerWidth / window.innerHeight;
-    const frustumSize = 50;
+    let frustumSize = 50;
 
     const camera = new THREE.OrthographicCamera(- 3*aspect,  3*aspect, 3, -3, 0.1, 1000);
 
@@ -46,7 +46,21 @@ export default {
     controls.update();
 
     document.addEventListener('wheel', function (e) {
-        // TODO: здесь прописать условия рескейлинга сетки
+
+      if (e.deltaY < 0) {
+            frustumSize *= 1.10;
+        } else {
+            frustumSize /= 1.10;
+        }
+
+        camera.left = -frustumSize * aspect;
+        camera.right = frustumSize * aspect;
+        camera.top = frustumSize;
+        camera.bottom = -frustumSize;
+        camera.updateProjectionMatrix();
+
+        gridGroup.rescale(frustumSize);
+        
     });
 
     const animate = function () {
@@ -56,7 +70,9 @@ export default {
     };
 
     animate();
+  },
+};
 
-}, }; </script>
+</script>
 
-// <style> #cubeContainer { width: 100%; height: 100%; } </style>
+<style> #cubeContainer { width: 100%; height: 100%; } </style>

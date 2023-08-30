@@ -14,45 +14,52 @@ export default class GridGroup extends Group {
     }
 
     
-    rescale(frustumSize){
-        /** Поведение при ремасштабировании */
+    rescale(frustumSize) {
 
+        // if (this.children.length > 0) {
+        //     this.remove(this.children[0]);
+        // }
+
+        const scale = Math.ceil(Math.log10(frustumSize));
+    
         for (const name in this.config.grid) {
-            const lineConfig = this.config.grid[name]
-            const {divisionValue, size, color} = lineConfig;
-
-            /* TODO: Здесь нужно использовать на каждый тип линий не множество THREE.Line а ровно один  THREE.LineSegments */
-            /* REMARK: Я убрал if divisionValue === 0 за ненадобностью и упростил код цикла */
-
+            const lineConfig = this.config.grid[name];
+            let { divisionValue, size, color } = lineConfig;
+    
+            divisionValue *= Math.pow(10, scale);
+    
             const lineMaterial = new THREE.LineBasicMaterial({ color: parseInt(color), linewidth: size });
-
-            for (let position = 0; position <= frustumSize; position += divisionValue){
-                const verticalLinePoints = [new THREE.Vector3(position, -frustumSize, DEPTH), new THREE.Vector3(position, frustumSize, DEPTH)];
-                const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
-                const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
-                this.add(verticalLine);
-
-                const horizontalLinePoints = [new THREE.Vector3(-frustumSize, position, DEPTH), new THREE.Vector3(frustumSize, position, DEPTH)];
-                const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
-                const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
-                this.add(horizontalLine);
+    
+            const verticalLinePoints = [];
+            const horizontalLinePoints = [];
+    
+            for (let position = 0; position <= frustumSize; position += divisionValue) {
+                verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
+                verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
+    
+                horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
+                horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
             }
-
-            for (let position = 0; position >= -frustumSize; position -= divisionValue){
-                const verticalLinePoints = [new THREE.Vector3(position, -frustumSize, DEPTH), new THREE.Vector3(position, frustumSize, DEPTH)];
-                const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
-                const verticalLine = new THREE.Line(verticalLineGeometry, lineMaterial);
-                this.add(verticalLine);
-
-                const horizontalLinePoints = [new THREE.Vector3(-frustumSize, position, DEPTH), new THREE.Vector3(frustumSize, position, DEPTH)];
-                const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
-                const horizontalLine = new THREE.Line(horizontalLineGeometry, lineMaterial);
-                this.add(horizontalLine);
+    
+            for (let position = 0; position >= -frustumSize; position -= divisionValue) {
+                verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
+                verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
+    
+                horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
+                horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
             }
-
-
+    
+            const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
+            const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
+    
+            const verticalLines = new THREE.LineSegments(verticalLineGeometry, lineMaterial);
+            const horizontalLines = new THREE.LineSegments(horizontalLineGeometry, lineMaterial);
+    
+            this.add(verticalLines);
+            this.add(horizontalLines);
         }
-
     }
+    
+    
 
 }
