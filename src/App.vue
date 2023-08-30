@@ -15,7 +15,7 @@ export default {
   mounted() {
     const scene = new THREE.Scene();
     const aspect = window.innerWidth / window.innerHeight;
-    let frustumSize = 50;
+    let frustumSize = 1;
 
     const camera = new THREE.OrthographicCamera(- 3*aspect,  3*aspect, 3, -3, 0.1, 1000);
 
@@ -39,7 +39,9 @@ export default {
 
     scene.add(camera);
 
-    gridGroup.rescale(frustumSize)
+    let SIZE = 3*Math.max(aspect,1)
+
+    gridGroup.rescale(SIZE/frustumSize)
 
     const controls = new OrbitControls( camera, renderer.domElement );
 
@@ -47,19 +49,27 @@ export default {
 
     document.addEventListener('wheel', function (e) {
 
-      if (e.deltaY < 0) {
-            frustumSize *= 1.10;
+        // if (e.deltaY < 0) {
+        //     frustumSize *= 1.122018454;
+        // } else {
+        //     frustumSize /= 1.122018454;
+        // }
+
+        if (e.deltaY < 0) {
+            frustumSize /= 0.95;
         } else {
-            frustumSize /= 1.10;
+            frustumSize *= 0.95;
         }
 
-        camera.left = -frustumSize * aspect;
-        camera.right = frustumSize * aspect;
-        camera.top = frustumSize;
-        camera.bottom = -frustumSize;
-        camera.updateProjectionMatrix();
+        // 0.95
 
-        gridGroup.rescale(frustumSize);
+        // camera.left = -frustumSize * aspect;
+        // camera.right = frustumSize * aspect;
+        // camera.top = frustumSize;
+        // camera.bottom = -frustumSize;
+        // camera.updateProjectionMatrix();
+
+        gridGroup.rescale(SIZE/frustumSize);
         
     });
 

@@ -16,9 +16,23 @@ export default class GridGroup extends Group {
     
     rescale(frustumSize) {
 
-        // if (this.children.length > 0) {
-        //     this.remove(this.children[0]);
-        // }
+        /*
+
+        Проверка на степень масштаба. 
+            если степень масштаба соответствует, ничего не делаем, иначе перерисовываем сетку
+        Перерисовка сетки
+            1) Удалить все линии, нарисованные на старом масштабе
+            2) Нарисовать линии на новом масштабе
+            3) В 
+        */
+            console.log(this.children)
+        while (this.children.length > 0) {
+            this.remove(this.children[0]);
+        }
+
+
+
+        // debugger
 
         const scale = Math.ceil(Math.log10(frustumSize));
     
