@@ -2,22 +2,22 @@
     "grid": {
         "1":{
             "size":1,
-            "color": "0xFFFFFF",
+            "color": "0xaaaaaa",
             "divisionValue": 0.1         
         },
         "2":{
             "size":2,
-            "color": "0xFF0000",
+            "color": "0xaaaaaa",
             "divisionValue": 0.5         
         },
         "3":{
             "size":3,
-            "color": "0xFFFF00",
+            "color": "0xaaaaaa",
             "divisionValue": 1         
         },
         "4":{
             "size":4,
-            "color": "0x00FF00",
+            "color": "0x00ffaa",
             "divisionValue": 100    
         }
 

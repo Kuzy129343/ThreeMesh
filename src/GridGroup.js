@@ -1,13 +1,15 @@
 import {Group} from "three";
 import * as THREE from 'three';
 
-const DEPTH = -5
+const DEPTH = 0
 
 export default class GridGroup extends Group {
 
-    constructor(config) {
+    constructor(config, mainAxes='z') {
         /** Инициализация */
         super();
+
+        this.mainAxes = mainAxes
 
         this.config = config
 
@@ -43,22 +45,70 @@ export default class GridGroup extends Group {
             const verticalLinePoints = [];
             const horizontalLinePoints = [];
     
-            for (let position = 0; position <= frustumSize; position += divisionValue) {
-                verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
-                verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
-    
-                horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
-                horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
+            if(this.mainAxes == 'z'){
+
+                for (let position = 0; position <= frustumSize; position += divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
+                    verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
+                    horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
+                }
+        
+                for (let position = 0; position >= -frustumSize; position -= divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
+                    verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
+                    horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
+                }
+        
             }
+
     
-            for (let position = 0; position >= -frustumSize; position -= divisionValue) {
-                verticalLinePoints.push(new THREE.Vector3(position, -frustumSize, DEPTH));
-                verticalLinePoints.push(new THREE.Vector3(position, frustumSize, DEPTH));
-    
-                horizontalLinePoints.push(new THREE.Vector3(-frustumSize, position, DEPTH));
-                horizontalLinePoints.push(new THREE.Vector3(frustumSize, position, DEPTH));
+            if(this.mainAxes == 'x'){
+
+                for (let position = 0; position <= frustumSize; position += divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(DEPTH, position, -frustumSize));
+                    verticalLinePoints.push(new THREE.Vector3(DEPTH, position, frustumSize));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(DEPTH, -frustumSize, position, ));
+                    horizontalLinePoints.push(new THREE.Vector3(DEPTH, frustumSize, position));
+                }
+        
+                for (let position = 0; position >= -frustumSize; position -= divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(DEPTH, position, -frustumSize));
+                    verticalLinePoints.push(new THREE.Vector3(DEPTH, position, frustumSize));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(DEPTH, -frustumSize, position));
+                    horizontalLinePoints.push(new THREE.Vector3(DEPTH, frustumSize, position));
+                }
+        
             }
-    
+
+                
+            if(this.mainAxes == 'y'){
+
+                for (let position = 0; position <= frustumSize; position += divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(position, DEPTH, -frustumSize));
+                    verticalLinePoints.push(new THREE.Vector3(position, DEPTH, frustumSize, ));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(-frustumSize, DEPTH, position));
+                    horizontalLinePoints.push(new THREE.Vector3(frustumSize, DEPTH, position));
+                }
+        
+                for (let position = 0; position >= -frustumSize; position -= divisionValue) {
+                    verticalLinePoints.push(new THREE.Vector3(position, DEPTH, -frustumSize));
+                    verticalLinePoints.push(new THREE.Vector3(position, DEPTH, frustumSize));
+        
+                    horizontalLinePoints.push(new THREE.Vector3(-frustumSize, DEPTH, position));
+                    horizontalLinePoints.push(new THREE.Vector3(frustumSize, DEPTH, position));
+                }
+        
+            }
+
+            
+
             const verticalLineGeometry = new THREE.BufferGeometry().setFromPoints(verticalLinePoints);
             const horizontalLineGeometry = new THREE.BufferGeometry().setFromPoints(horizontalLinePoints);
     
