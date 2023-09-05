@@ -49,25 +49,12 @@ export default {
 
     document.addEventListener('wheel', function (e) {
 
-        // if (e.deltaY < 0) {
-        //     frustumSize *= 1.122018454;
-        // } else {
-        //     frustumSize /= 1.122018454;
-        // }
 
         if (e.deltaY < 0) {
             frustumSize /= 0.95;
         } else {
             frustumSize *= 0.95;
         }
-
-        // 0.95
-
-        // camera.left = -frustumSize * aspect;
-        // camera.right = frustumSize * aspect;
-        // camera.top = frustumSize;
-        // camera.bottom = -frustumSize;
-        // camera.updateProjectionMatrix();
 
         gridGroup.rescale(SIZE/frustumSize);
         

@@ -30,17 +30,13 @@ export default class GridGroup extends Group {
             this.remove(this.children[0]);
         }
 
-
-
-        // debugger
-
-        const scale = Math.ceil(Math.log10(frustumSize));
+        const scale = Math.ceil(Math.log2(frustumSize/2));
     
         for (const name in this.config.grid) {
             const lineConfig = this.config.grid[name];
             let { divisionValue, size, color } = lineConfig;
     
-            divisionValue *= Math.pow(10, scale);
+            divisionValue *= Math.pow(2, scale);
     
             const lineMaterial = new THREE.LineBasicMaterial({ color: parseInt(color), linewidth: size });
     
@@ -73,7 +69,5 @@ export default class GridGroup extends Group {
             this.add(horizontalLines);
         }
     }
-    
-    
 
 }
